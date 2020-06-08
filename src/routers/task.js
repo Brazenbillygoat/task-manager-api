@@ -73,7 +73,7 @@ router.get('/tasks', auth, async (req, res) => {
     }
 
     try {
-
+        console.log(req.user)
         //both lines below do the same thing
         //const task = await Task.find({ owner: req.user._id})
         await req.user.populate({
@@ -86,7 +86,7 @@ router.get('/tasks', auth, async (req, res) => {
             }
         }).execPopulate()
         
-        res.send(req.user.tasks)
+        res.status(200).send(req.user.tasks)
     } catch (e) {
         res.status(400).send(e)
     }
@@ -99,27 +99,26 @@ router.get('/tasks/:id', auth, async (req, res) => {
         const task = await Task.findOne({ _id, owner: req.user._id })
 
         if (!task) {
-            res.status(404).send('This id does not match any id in the database.')
+            return res.status(404).send('This id does not match any id in the database.')
         }
-        res.status(200).send(task)
+        return res.status(200).send(task)
     } catch (e) {
-        res.status(404).send('There is no task with that id. Make sure you have copied the id correctly.')
+         return res.status(404).send('There is no task with that id. Make sure you have copied the id correctly.')
     }
 })
 
 router.delete('/tasks/:id', auth, async (req, res) => {
     
-
     try {
         const task = await Task.findOneAndDelete({_id: req.params.id, owner: req.user._id})
 
         if (!task) {
-            res.status(404).send('This id does not match any id in the database.')
+            return res.status(404).send('This id does not match any id in the database.')
         }
 
-        res.status(200).send(task)
+         return res.status(200).send(task)
     } catch (e) {
-        res.status(500).send('There is no task with that id. Make sure you have copied the id correctly.')
+        return res.status(500).send('There is no task with that id. Make sure you have copied the id correctly.')
     }
 })
 
